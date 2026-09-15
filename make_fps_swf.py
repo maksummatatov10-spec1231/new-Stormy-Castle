@@ -582,6 +582,16 @@ def make_event_method(p: Pool, q: dict, strings: dict, colors: dict) -> bytes:
     # Number(text) is a conversion call (like the existing int/String calls
     # in this ABC), not an object allocation.
     a.pool(0x66, q['text']); a.emit(0x46); a.code += u30(q['Number']) + u30(1); a.emit(0x63); a.code += u30(4)
+    # Keep malformed, zero, negative, and extreme input from reaching the
+    # Stage.frameRate setter. Invalid custom values fall back to the default.
+    a.pool(0x5d, q['isFinite']); a.getlocal(4); a.emit(0x46); a.code += u30(q['isFinite']) + u30(1)
+    a.branch(0x12, 'invalid_custom')
+    a.getlocal(4); a.push_number(1); a.branch(0x15, 'invalid_custom')
+    a.getlocal(4); a.push_number(1000); a.branch(0x17, 'invalid_custom')
+    a.branch(0x10, 'valid_custom')
+    a.label('invalid_custom')
+    a.push_number(75); a.setlocal(4)
+    a.label('valid_custom')
     a.getlocal(0); a.getlex(q['stage']); a.getlocal(4); a.pool(0x61, q['frameRate'])
     a.getlocal(0); a.pool(0x66, q['m_stateManager']); a.push_number(1); a.getlocal(4); a.emit(0x9b)
     a.emit(0x4f); a.code += u30(q['setFrameRate']) + u30(1)
@@ -663,7 +673,7 @@ def patch_abc(original: bytes) -> bytes:
         'stopDrag': p.qname(1, 'stopDrag'),
         'setFrameRate': p.qname(1, 'setFrameRate'),
         'mouseX': 3834, 'mouseY': 3835,
-        'Math': 3648, 'min': 3649,
+        'Math': 3648, 'min': 3649, 'isFinite': 4236,
     }
     # Event type and field names that are already public but have no direct
     # QName in this ABC are supplied above through the existing pool.

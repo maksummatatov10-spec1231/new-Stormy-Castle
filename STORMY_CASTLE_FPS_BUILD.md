@@ -11,7 +11,7 @@ The FPS controls are embedded in the SWF's AVM2/Main code; there is no HTML wrap
 1. Start the game and right-click anywhere in the game stage.
 2. The embedded `Stormy Castle FPS` panel opens at the pointer position.
 3. Drag the panel by its blue header.
-4. Use `75 FPS`, `120 FPS`, or type another numeric value in the input and press `Apply`.
+4. Use `75 FPS`, `120 FPS`, or type another numeric value in the input and press `Apply`. Valid custom values are finite numbers from 1 through 1000; invalid input falls back to 75.
 5. `Close` removes the panel.
 
 The panel is positioned with a small edge clamp so it remains on the 800 by 600 stage.
